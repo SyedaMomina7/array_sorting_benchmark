@@ -31,7 +31,7 @@ matrix_struct *get_matrix_struct(char matrix[]) {
     
     // write rows and cols to struct
     m->cols++;
-    
+  
     // allocate memory for matrix data
     m->mat_data = calloc(m->rows, sizeof(double*)); 
     int i;

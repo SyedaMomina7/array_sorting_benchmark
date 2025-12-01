@@ -1,21 +1,32 @@
-CC=gcc
-CFLAGS= -Wall -std=gnu99 -g -fopenmp
-LIBS=src/matrix.c
-TUNE= -O2
+CC = gcc
+MPICC = mpicc
+CFLAGS = -O2 -Wall -std=gnu99 -g
 
-all: sequential omp thread2 mpi
+all: seq omp thread2 mpi seq_sort omp_sort thread_sort mpi_sort
 
-sequential:
-		$(CC) $(TUNE) $(CFLAGS) -o bin/seq $(LIBS) src/sequential.c
+seq:
+	$(CC) $(CFLAGS) -o bin/seq src/matrix.c src/sequential.c
 
 omp:
-		$(CC) $(TUNE) $(CFLAGS) -o bin/omp $(LIBS) src/omp.c
-
-thread:
-		$(CC) $(TUNE) $(CFLAGS) -pthread -o bin/thread $(LIBS) src/thread.c
+	$(CC) $(CFLAGS) -fopenmp -o bin/omp src/matrix.c src/omp.c
 
 thread2:
-		$(CC) $(TUNE) $(CFLAGS) -pthread -o bin/thread2 $(LIBS) src/thread2.c
+	$(CC) $(CFLAGS) -pthread -o bin/thread2 src/matrix.c src/thread2.c
 
 mpi:
-		mpicc $(TUNE) $(CFLAGS) -o bin/mpi $(LIBS) src/mpi.c
+	$(MPICC) $(CFLAGS) -o bin/mpi src/matrix.c src/mpi.c
+
+# Sorting Programs
+seq_sort: src/sorting/sequential_sort.c
+	gcc -O2 -Wall -std=gnu99 -g -o bin/seq_sort src/sorting/sequential_sort.c
+
+omp_sort: src/sorting/omp_sort.c
+	gcc -O2 -Wall -std=gnu99 -g -fopenmp -o bin/omp_sort src/sorting/omp_sort.c
+
+thread_sort: src/sorting/thread_sort.c
+	gcc -O2 -Wall -std=gnu99 -g -pthread -o bin/thread_sort src/sorting/thread_sort.c
+
+mpi_sort: src/sorting/mpi_sort.c
+	mpicc -O2 -Wall -std=gnu99 -g -o bin/mpi_sort src/sorting/mpi_sort.c
+
+all: seq_sort omp_sort thread_sort mpi_sort
